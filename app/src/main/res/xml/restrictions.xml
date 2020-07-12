@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<restrictions xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <restriction
+        android:key="test_list"
+        android:restrictionType="bundle_array"
+        android:title="Tests List">
+        <restriction
+            android:key="test"
+            android:restrictionType="bundle"
+            android:title="Test">
+            <restriction
+                android:key="test_hostname"
+                android:restrictionType="string"
+                android:title="Hostname"/>
+            <restriction
+                android:key="test_port"
+                android:restrictionType="integer"
+                android:title="Port"/>
+        </restriction>
+    </restriction>
+
+</restrictions>
