@@ -25,10 +25,6 @@ android {
         debug {
             signingConfig signingConfigs.debug
         }
-        poc {
-            applicationIdSuffix = '.poc'
-            signingConfig signingConfigs.debug
-        }
     }
 
 }

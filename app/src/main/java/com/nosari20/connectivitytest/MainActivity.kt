@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
             client.close()
             val after = System.currentTimeMillis()
             test.status = ConnectivityTest.Status.OK
-            test.info = "Time: " + (after-before) + "ms"
+            test.info = "Time: " + (after-before) + "ms (" + client.inetAddress.hostAddress+")"
         } catch(e: Exception) {
             test.status = ConnectivityTest.Status.KO
             test.info = e.localizedMessage
