@@ -13,7 +13,10 @@ class ConnectivityTestListAdapter(private val list: List<ConnectivityTest>)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConnectivityTestViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return ConnectivityTestViewHolder(inflater, parent)
+        return ConnectivityTestViewHolder(
+            inflater,
+            parent
+        )
     }
 
     override fun onBindViewHolder(holder: ConnectivityTestViewHolder, position: Int) {
@@ -25,7 +28,7 @@ class ConnectivityTestListAdapter(private val list: List<ConnectivityTest>)
 
 
     class ConnectivityTestViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
-        RecyclerView.ViewHolder(inflater.inflate(R.layout.test_list_item, parent, false)) {
+        RecyclerView.ViewHolder(inflater.inflate(R.layout.list_item_test, parent, false)) {
         private var mTitleView: TextView? = null
         private var mStatusView: TextView? = null
         private var mStatusOKView: ImageView? = null
