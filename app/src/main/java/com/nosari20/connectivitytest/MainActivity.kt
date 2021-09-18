@@ -28,22 +28,33 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
-
         Configuration.all().get("google")?.let { CheckListFragment(it) }?.let {
             adapter.addFragment(
-                it,"Google")
+                it,"Android")
+        }
+
+        Configuration.all().get("knox")?.let { CheckListFragment(it) }?.let {
+            adapter.addFragment(
+                it,"Knox")
+        }
+
+        Configuration.all().get("apple")?.let { CheckListFragment(it) }?.let {
+            adapter.addFragment(
+                it,"Apple")
+        }
+
+        Configuration.all().get("tests")?.let { CheckListFragment(it) }?.let {
+            adapter.addFragment(
+                it,"Tests")
         }
 
 
         viewpager.adapter = adapter
 
+
         TabLayoutMediator(tabs, viewpager) { tab, position ->
             tab.text = (viewpager.adapter as ViewPager2FragmentAdapter).getPageTitle(position)
         }.attach()
-
-
-
 
 
 

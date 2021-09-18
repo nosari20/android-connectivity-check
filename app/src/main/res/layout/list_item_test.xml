@@ -80,10 +80,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
             android:paddingLeft="16dp"
-            android:text="status"
+            android:text="status1\nstatus2"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@+id/ConstraintLayout"
-            app:layout_constraintStart_toStartOf="@+id/ConstraintLayout" />
+            app:layout_constraintStart_toStartOf="@+id/ConstraintLayout"
+            app:layout_constraintTop_toBottomOf="@+id/list_item_title" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

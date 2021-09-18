@@ -1,6 +1,6 @@
 package com.nosari20.connectivitytest
 
-class ConnectivityTest(val host: String, val port: Int) {
+class ConnectivityTest(val host: String, val port: Int, val ssl: Boolean) {
     enum class Status {
         PENDING, KO, OK, UNKNOWN
     }
