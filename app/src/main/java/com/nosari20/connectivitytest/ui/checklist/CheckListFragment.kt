@@ -2,6 +2,7 @@ package com.nosari20.connectivitytest.ui.checklist
 
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,8 +20,11 @@ import java.security.cert.X509Certificate
 import javax.net.ssl.*
 
 
-class CheckListFragment(private val list: List<ConnectivityTest>) : Fragment() {
+class CheckListFragment(private var list: List<ConnectivityTest>, private val onLongClick: Handler?) : Fragment() {
 
+    companion object {
+        val KEY_ID: String = "item_id"
+    }
 
     private lateinit var testlist: RecyclerView
 
@@ -36,7 +40,7 @@ class CheckListFragment(private val list: List<ConnectivityTest>) : Fragment() {
         testlist = root.findViewById<RecyclerView>(R.id.test_list)
         testlist.apply {
             layoutManager = LinearLayoutManager(this.context)
-            adapter = ConnectivityTestListAdapter(list)
+            adapter = ConnectivityTestListAdapter(list,onLongClick)
         }
 
 
@@ -63,6 +67,27 @@ class CheckListFragment(private val list: List<ConnectivityTest>) : Fragment() {
         }
 
         return root
+    }
+
+    fun addToList(test: ConnectivityTest) {
+        val nlist = list.toMutableList()
+        nlist.add(test)
+        list = nlist
+
+        testlist.apply {
+            layoutManager = LinearLayoutManager(this.context)
+            adapter = ConnectivityTestListAdapter(list, onLongClick)
+        }
+    }
+
+    fun removeFromList(pos: Int) {
+        val nlist = list.toMutableList()
+        nlist.removeAt(pos)
+        list = nlist
+        testlist.apply {
+            layoutManager = LinearLayoutManager(this.context)
+            adapter = ConnectivityTestListAdapter(list, onLongClick)
+        }
     }
 
 

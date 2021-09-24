@@ -18,11 +18,6 @@ class ViewPagerAdapter2(fm: FragmentManager?) : FragmentPagerAdapter(fm!!) {
         return mFragmentList.size
     }
 
-    fun addFragment(fragment: Fragment, title: String) {
-        mFragmentList.add(fragment)
-        mFragmentTitleList.add(title)
-    }
-
     override fun getPageTitle(position: Int): CharSequence? {
         return mFragmentTitleList[position]
     }
