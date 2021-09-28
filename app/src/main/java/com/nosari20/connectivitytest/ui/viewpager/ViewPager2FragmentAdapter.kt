@@ -31,4 +31,12 @@ class ViewPager2FragmentAdapter(
     fun getPageTitle(position: Int): CharSequence? {
         return mFragmentTitleList[position]
     }
+
+    fun getFragment(title: String) : Fragment? {
+        val pos = mFragmentTitleList.indexOf(title)
+        if (pos >= 0 )
+            return mFragmentList[pos]
+        else
+            return null
+    }
 }

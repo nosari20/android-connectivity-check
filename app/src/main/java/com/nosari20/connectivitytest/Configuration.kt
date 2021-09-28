@@ -1,5 +1,6 @@
 package com.nosari20.connectivitytest
 
+import android.app.Activity
 import android.content.Context
 import android.content.RestrictionsManager
 import android.os.Bundle
@@ -8,41 +9,48 @@ import android.os.Parcelable
 object Configuration {
 
     private var checkList =  HashMap<String,ArrayList<ConnectivityTest>>()
-    //get() = this.checkList
 
     init {
         // Google services
         val googleServices = arrayListOf<ConnectivityTest>();
-        googleServices.add(ConnectivityTest("accounts.google.com", 443))
-        googleServices.add(ConnectivityTest("accounts.google.fr", 443))
-        googleServices.add(ConnectivityTest("clients1.google.com", 443))
-        googleServices.add(ConnectivityTest("play.google.com", 443))
-        googleServices.add(ConnectivityTest("android.googleapis.com", 443))
-        googleServices.add(ConnectivityTest("fcm.googleapis.com", 443))
-        googleServices.add(ConnectivityTest("fcm-xmpp.googleapis.com", 5228))
-        googleServices.add(ConnectivityTest("fcm-xmpp.googleapis.com", 5229))
-        googleServices.add(ConnectivityTest("fcm-xmpp.googleapis.com", 5230))
-        googleServices.add(ConnectivityTest("mtalk.google.com", 5228))
-        googleServices.add(ConnectivityTest("mtalk.google.com", 5229))
-        googleServices.add(ConnectivityTest("mtalk.google.com", 5230))
-        googleServices.add(ConnectivityTest("lh3.ggpht.com", 443))
-        googleServices.add(ConnectivityTest("lh4.ggpht.com", 443))
-        googleServices.add(ConnectivityTest("lh5.ggpht.com", 443))
-        googleServices.add(ConnectivityTest("lh6.ggpht.com", 443))
-        googleServices.add(ConnectivityTest("lh1.googleusercontent.com", 443))
-        googleServices.add(ConnectivityTest("lh2.googleusercontent.com", 443))
-        googleServices.add(ConnectivityTest("lh3.googleusercontent.com", 443))
-        googleServices.add(ConnectivityTest("lh4.googleusercontent.com", 443))
-        googleServices.add(ConnectivityTest("lh5.googleusercontent.com", 443))
-        googleServices.add(ConnectivityTest("lh6.googleusercontent.com", 443))
+
+        // Global
+        googleServices.add(ConnectivityTest("accounts.google.com", 443, true))
+        googleServices.add(ConnectivityTest("accounts.google.fr", 443, true))
+        googleServices.add(ConnectivityTest("clients1.google.com", 443, true))
+        googleServices.add(ConnectivityTest("play.google.com", 443, true))
+        googleServices.add(ConnectivityTest("android.googleapis.com", 443, true))
+
+        // Push
+        googleServices.add(ConnectivityTest("fcm.googleapis.com", 443, true))
+        googleServices.add(ConnectivityTest("fcm-xmpp.googleapis.com", 5228, true))
+        googleServices.add(ConnectivityTest("fcm-xmpp.googleapis.com", 5229, true))
+        googleServices.add(ConnectivityTest("fcm-xmpp.googleapis.com", 5230, true))
+        googleServices.add(ConnectivityTest("mtalk.google.com", 5228, true))
+        googleServices.add(ConnectivityTest("mtalk.google.com", 5229, true))
+        googleServices.add(ConnectivityTest("mtalk.google.com", 5230, true))
+
+        // Static content
+        googleServices.add(ConnectivityTest("lh3.ggpht.com", 443, true))
+        googleServices.add(ConnectivityTest("lh4.ggpht.com", 443, true))
+        googleServices.add(ConnectivityTest("lh5.ggpht.com", 443, true))
+        googleServices.add(ConnectivityTest("lh6.ggpht.com", 443, true))
+        googleServices.add(ConnectivityTest("lh1.googleusercontent.com", 443, true))
+        googleServices.add(ConnectivityTest("lh2.googleusercontent.com", 443, true))
+        googleServices.add(ConnectivityTest("lh3.googleusercontent.com", 443, true))
+        googleServices.add(ConnectivityTest("lh4.googleusercontent.com", 443, true))
+        googleServices.add(ConnectivityTest("lh5.googleusercontent.com", 443, true))
+        googleServices.add(ConnectivityTest("lh6.googleusercontent.com", 443, true))
 
         checkList.put("google",googleServices)
+
+
 
     }
 
     fun loadManagedConfigurations(context: Context ) {
         // Managed configurations
-        val customChecks = arrayListOf<ConnectivityTest>();
+        val managedChecks = arrayListOf<ConnectivityTest>();
         val myRestrictionsMgr = context.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager
         val appRestrictions: Bundle = myRestrictionsMgr.applicationRestrictions
         val parcelables: Array<out Parcelable>? = appRestrictions.getParcelableArray("test_list")
@@ -50,21 +58,69 @@ object Configuration {
             // iterate parcelables and cast as bundle
             parcelables.map { it as Bundle }.forEach { testBundle ->
                 // parse bundle data and store in VpnConfig array
-                customChecks.add(
+                managedChecks.add(
                     ConnectivityTest(
                         testBundle.getString("test_hostname").toString(),
-                        testBundle.getInt("test_port")
+                        testBundle.getInt("test_port"),
+                        testBundle.getBoolean("test_ssl")
                     )
                 )
             }
         }
-        checkList.put("custom",customChecks)
+        checkList.put("managed",managedChecks)
 
+
+
+
+    }
+
+    fun loadLocalConfigurations(activity: Activity ) {
+        // Local configuration (from preferences)
+        val localChecks = arrayListOf<ConnectivityTest>();
+        val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
+
+        val testList = sharedPref.getString("test_list", "")?.split(";")
+        if (testList != null) {
+            for (testString in testList){
+                val test = testString.split(",")
+
+                if (test.size == 3) {
+                    localChecks.add(
+                        ConnectivityTest(
+                            test[0],
+                            Integer.parseInt(test[1]),
+                            test[2].equals("true")
+                        )
+                    )
+                }
+            }
+        }
+
+        checkList.put("local",localChecks)
+    }
+
+
+    fun applyLocalConfigurations(activity: Activity ) {
+        // Local configuration (from preferences)
+        val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
+        var sharedPrefString = ""
+        for (check in checkList.get("local")!!){
+            sharedPrefString += (check.host+","+check.port+","+check.ssl+";")
+        }
+
+        with(sharedPref.edit()) {
+            putString("test_list", sharedPrefString)
+            apply()
+        }
     }
 
 
     fun all(): Map<String, List<ConnectivityTest>> {
         return checkList
+    }
+
+    fun update(key: String, list: ArrayList<ConnectivityTest>) {
+        checkList.put(key,list)
     }
 
 
