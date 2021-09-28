@@ -20,7 +20,7 @@
             <restriction
                 android:key="test_ssl"
                 android:restrictionType="bool"
-                android:title="Port"/>
+                android:title="Use SSL/TLS"/>
         </restriction>
     </restriction>
 
