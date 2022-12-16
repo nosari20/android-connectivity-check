@@ -90,6 +90,14 @@ class CheckListFragment(private var list: List<ConnectivityTest>, private val on
         }
     }
 
+    fun setList(list: ArrayList<ConnectivityTest>) {
+        this.list = list
+        testlist.apply {
+            layoutManager = LinearLayoutManager(this.context)
+            adapter = ConnectivityTestListAdapter(list, onLongClick)
+        }
+    }
+
 
     fun check_tcp(test: ConnectivityTest) {
         try {

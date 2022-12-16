@@ -68,10 +68,40 @@ object Configuration {
             }
         }
         checkList.put("managed",managedChecks)
+    }
 
 
+    fun serializeConfig(): String {
+        var configString = ""
+        for (check in checkList.get("local")!!){
+            configString += (check.host+","+check.port+","+check.ssl+";")
+        }
+        return configString
+    }
+
+    fun deSerializeConfig(configString: String): ArrayList<ConnectivityTest>  {
+        var configList = arrayListOf<ConnectivityTest>()
+
+        val testList = configString.split(";")
+        if (testList != null) {
+            for (testString in testList){
+                val test = testString.split(",")
+
+                if (test.size == 3) {
+                        configList.add(
+                            ConnectivityTest(
+                                test[0],
+                                Integer.parseInt(test[1]),
+                                test[2].equals("true")
+                            )
+                        )
 
 
+                }
+            }
+        }
+
+        return configList
     }
 
     fun loadLocalConfigurations(activity: Activity ) {
@@ -79,52 +109,48 @@ object Configuration {
         val localChecks = arrayListOf<ConnectivityTest>();
         val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
 
-        val testList = sharedPref.getString("test_list", "")?.split(";")
-        if (testList != null) {
-            for (testString in testList){
-                val test = testString.split(",")
-
-                if (test.size == 3) {
-                    localChecks.add(
-                        ConnectivityTest(
-                            test[0],
-                            Integer.parseInt(test[1]),
-                            test[2].equals("true")
-                        )
-                    )
-                }
-            }
+        for (test: ConnectivityTest in deSerializeConfig(sharedPref.getString("test_list", "")!!)){
+            localChecks.add(
+                test
+            )
         }
 
         checkList.put("local",localChecks)
     }
 
 
-    fun applyLocalConfigurations(activity: Activity ) {
-        // Local configuration (from preferences)
-        val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
-        var sharedPrefString = ""
-        for (check in checkList.get("local")!!){
-            sharedPrefString += (check.host+","+check.port+","+check.ssl+";")
+    fun loadSerializedConfigurations(configString: String) {
+        var localChecks = checkList.get("local")
+        if (localChecks == null) {
+            localChecks = arrayListOf<ConnectivityTest>();
         }
 
+        for (test: ConnectivityTest in deSerializeConfig(configString)){
+                localChecks.add(
+                    test
+                )
+        }
+
+        checkList.put("local",localChecks)
+    }
+
+    fun saveLocalConfigurations(activity: Activity ) {
+        // Local configuration (from preferences)
+        val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
         with(sharedPref.edit()) {
-            putString("test_list", sharedPrefString)
+            putString("test_list", serializeConfig())
             apply()
         }
     }
 
 
-    fun all(): Map<String, List<ConnectivityTest>> {
+    fun all(): Map<String, ArrayList<ConnectivityTest>> {
         return checkList
     }
 
     fun update(key: String, list: ArrayList<ConnectivityTest>) {
         checkList.put(key,list)
     }
-
-
-
 
 
 

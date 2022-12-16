@@ -3,8 +3,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 33
+    buildToolsVersion "33.0.0"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -18,9 +18,9 @@ android {
     defaultConfig {
         applicationId "com.nosari20.connectivitytest"
         minSdkVersion 26
-        targetSdkVersion 31
-        versionCode 6
-        versionName "1.2"
+        targetSdkVersion 33
+        versionCode 10
+        versionName "1.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -35,6 +35,7 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    namespace 'com.nosari20.connectivitytest'
 
 }
 
