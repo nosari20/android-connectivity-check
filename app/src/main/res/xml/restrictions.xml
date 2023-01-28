@@ -21,6 +21,11 @@
                 android:key="test_ssl"
                 android:restrictionType="bool"
                 android:title="Use SSL/TLS"/>
+            <restriction
+                android:key="test_certalias"
+                android:restrictionType="string"
+                android:title="CBA alias"
+                android.description="Certificate alias for client authentication"/>
         </restriction>
     </restriction>
 
