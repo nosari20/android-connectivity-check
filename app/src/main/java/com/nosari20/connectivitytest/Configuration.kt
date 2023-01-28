@@ -62,7 +62,8 @@ object Configuration {
                     ConnectivityTest(
                         testBundle.getString("test_hostname").toString(),
                         testBundle.getInt("test_port"),
-                        testBundle.getBoolean("test_ssl")
+                        testBundle.getBoolean("test_ssl"),
+                        testBundle.getString("test_certalias").toString()
                     )
                 )
             }
@@ -74,7 +75,7 @@ object Configuration {
     fun serializeConfig(): String {
         var configString = ""
         for (check in checkList.get("local")!!){
-            configString += (check.host+","+check.port+","+check.ssl+";")
+            configString += (check.host+","+check.port+","+check.ssl+","+check.certAlias+";")
         }
         return configString
     }
@@ -87,16 +88,15 @@ object Configuration {
             for (testString in testList){
                 val test = testString.split(",")
 
-                if (test.size == 3) {
+                if (test.size == 4) {
                         configList.add(
                             ConnectivityTest(
                                 test[0],
                                 Integer.parseInt(test[1]),
-                                test[2].equals("true")
+                                test[2].equals("true"),
+                                test[3]
                             )
                         )
-
-
                 }
             }
         }

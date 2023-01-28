@@ -3,6 +3,7 @@ package com.nosari20.connectivitytest.ui.checklist
 
 import android.os.Bundle
 import android.os.Handler
+import android.security.KeyChain
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,16 +16,14 @@ import com.nosari20.connectivitytest.ConnectivityTestListAdapter
 import com.nosari20.connectivitytest.R
 import java.io.ByteArrayInputStream
 import java.net.Socket
+import java.security.Principal
+import java.security.PrivateKey
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
 
 
 class CheckListFragment(private var list: List<ConnectivityTest>, private val onLongClick: Handler?) : Fragment() {
-
-    companion object {
-        val KEY_ID: String = "item_id"
-    }
 
     private lateinit var testlist: RecyclerView
 
@@ -122,21 +121,83 @@ class CheckListFragment(private var list: List<ConnectivityTest>, private val on
 
     fun check_ssl(test: ConnectivityTest) {
 
+        var sslFactory: SSLSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
 
+            val clientAuth = !(test.certAlias.isEmpty() || test.certAlias.equals("null"))
 
-        try {
+            if(clientAuth) {
 
-            val client: SSLSocket = SSLSocketFactory.getDefault().run {
-                createSocket(test.host, test.port) as SSLSocket
+                val priv = KeyChain.getPrivateKey(this.requireContext(), test.certAlias)
+                val pub = KeyChain.getCertificateChain(this.requireContext(), test.certAlias)
+
+                if (priv == null) {
+                    requestAliasPermission(test);
+                    return
+                }
+
+                val km = object : X509KeyManager {
+
+                    override fun getCertificateChain(alias: String?): Array<X509Certificate> {
+                        return pub!!
+                    }
+
+                    override fun getPrivateKey(alias: String?): PrivateKey {
+                        return priv!!
+                    }
+
+                    override fun chooseClientAlias(keyType: Array<out String>?, issuers: Array<out Principal>?, socket: Socket ): String {
+                        return test.certAlias
+                    }
+
+                    override fun getClientAliases(
+                        keyType: String?,
+                        issuers: Array<out Principal>?
+                    ): Array<String> {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun getServerAliases(
+                        keyType: String?,
+                        issuers: Array<out Principal>?
+                    ): Array<String> {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun chooseServerAlias(
+                        keyType: String?,
+                        issuers: Array<out Principal>?,
+                        socket: Socket?
+                    ): String {
+                        TODO("Not yet implemented")
+                    }
+
+                }
+
+                var sslContext = SSLContext.getInstance("TLS")
+
+                sslContext.init(arrayOf<KeyManager>(km), null, null)
+
+                sslFactory = sslContext.socketFactory
             }
 
+
+            var client: SSLSocket? = null
+
+            /*
             getActivity()?.runOnUiThread(java.lang.Runnable {
                 testlist.adapter?.notifyDataSetChanged()
             })
+            */
+
+        try {
+
+            client = sslFactory.run {
+                createSocket(test.host, test.port, ) as SSLSocket
+            }
+
 
             val before = System.currentTimeMillis()
             client.startHandshake()
-
             val after = System.currentTimeMillis()
 
             val session = client.session
@@ -153,11 +214,14 @@ class CheckListFragment(private var list: List<ConnectivityTest>, private val on
                     val SANs = x509.subjectAlternativeNames
 
                     for (SAN in SANs) {
-                        if(SAN[0] == 2) {// if DNS name
+                        if (SAN[0] == 2) {// if DNS name
                             val DNSName = SAN[1].toString()
-                            match = DNSName.equals(hostname) || // DNSName = example.com, Hostname = example.com
-                                    (DNSName.replace(hostname,"").equals(".*")) || // DNSName = *.example.com, Hostname = example.com
-                                    (hostname.removeSuffix(DNSName.removePrefix("*.")).endsWith(".")) // DNSName = *.example.com, Hostname = foo.example.com
+                            match =
+                                DNSName.equals(hostname) || // DNSName = example.com, Hostname = example.com
+                                        (DNSName.replace(hostname, "")
+                                            .equals(".*")) || // DNSName = *.example.com, Hostname = example.com
+                                        (hostname.removeSuffix(DNSName.removePrefix("*."))
+                                            .endsWith(".")) // DNSName = *.example.com, Hostname = foo.example.com
 
                             if (match)
                                 break
@@ -166,7 +230,7 @@ class CheckListFragment(private var list: List<ConnectivityTest>, private val on
 
                     match
 
-                } catch (e: Exception){
+                } catch (e: Exception) {
                     match
                 } finally {
                     match
@@ -179,20 +243,51 @@ class CheckListFragment(private var list: List<ConnectivityTest>, private val on
                 test.info = "Wrong host"
             } else {
                 test.status = ConnectivityTest.Status.OK
-                test.info = "Time: " + (after-before) + "ms (" + client.inetAddress.hostAddress+")"+"" +
-                        "\n Certificate : OK, Protocol : " +session.protocol
+                test.info =
+                    "Time: " + (after - before) + "ms (" + client.inetAddress.hostAddress + ")" + "" +
+                            "\nCertificate : OK, Protocol : " + session.protocol + ( if(clientAuth) " (mutual)" else "")
             }
 
             client.close()
 
+        } catch (e: SSLHandshakeException) {
+            test.status = ConnectivityTest.Status.KO
+            test.info = "Error during handshake: "+e.localizedMessage
+
         } catch (e: Exception) {
             test.status = ConnectivityTest.Status.KO
-            test.info = e.localizedMessage.removePrefix("java.security.cert.CertPathValidatorException: ")
+            test.info = ""+e.localizedMessage
+
         } finally {
             getActivity()?.runOnUiThread(java.lang.Runnable {
                 testlist.adapter?.notifyDataSetChanged()
             })
         }
+    }
+
+    fun requestAliasPermission(test: ConnectivityTest){
+        KeyChain.choosePrivateKeyAlias(this.requireActivity(),
+            { alias ->
+                if (alias == null) {
+                    test.status = ConnectivityTest.Status.UNKNOWN
+                    test.info = "Certificate not selected"
+                }else{
+
+                    if(alias != test.certAlias){
+                        test.status = ConnectivityTest.Status.UNKNOWN
+                        test.info = "Permission granted to wrong certificate"
+                    }else{
+                        check_ssl(test)
+                    }
+                }
+
+                getActivity()?.runOnUiThread(java.lang.Runnable {
+                    testlist.adapter?.notifyDataSetChanged()
+                })
+
+
+            },  /* keyTypes[] */null,  /* issuers[] */null,  /* uri */null,  /* alias */test.certAlias
+        )
     }
 
 }

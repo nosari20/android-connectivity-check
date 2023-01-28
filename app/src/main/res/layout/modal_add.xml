@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="23dp"
-        tools:layout_editor_absoluteY="23dp">
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="-231dp">
 
         <TextView
             android:id="@+id/textView"
@@ -39,16 +39,57 @@
             android:inputType="numberSigned"
             android:text="443" />
 
-        <Switch
-            android:id="@+id/edit_test_ssl"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="Check SSL" />
+            android:orientation="horizontal">
+
+            <Switch
+                android:id="@+id/edit_test_ssl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20pt"
+                android:checked="false"
+                android:text="Check SSL" />
+
+            <Switch
+                android:id="@+id/edit_clientauth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Client Auth." />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_certalias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10pt"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <Button
+                android:id="@+id/button_select_certalias"
+                android:layout_width="5pt"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Select" />
+
+            <EditText
+                android:id="@+id/field_test_certalias"
+                android:layout_width="139dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:editable="false"
+                android:ems="10"
+                android:inputType="none"
+                android:textSize="14sp" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/button_add"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20sp"
             android:text="Add" />

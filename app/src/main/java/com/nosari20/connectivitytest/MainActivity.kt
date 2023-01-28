@@ -1,22 +1,24 @@
 package com.nosari20.connectivitytest
 
-import android.content.Intent
 import android.net.Uri
-import android.os.*
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.view.View
-import android.view.View.OnLongClickListener
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.nosari20.connectivitytest.ui.checklist.CheckListFragment
 import com.nosari20.connectivitytest.ui.dialog.AddTestDialogFragment
 import com.nosari20.connectivitytest.ui.viewpager.ViewPager2FragmentAdapter
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.*
-import java.lang.StringBuilder
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,9 +43,7 @@ class MainActivity : AppCompatActivity() {
                 val  pos = Integer.parseInt(""+msg.data.get(ConnectivityTestListAdapter.ConnectivityTestViewHolder.KEY_POSITION))
 
                 val localTests = testList.all().get("local")?.toMutableList()
-                if (localTests != null) {
-                    localTests.removeAt(pos)
-                }
+                localTests?.removeAt(pos)
                 testList.update("local", localTests as ArrayList<ConnectivityTest>)
                 testList.saveLocalConfigurations(activity)
                 (adapter.getFragment("Custom") as CheckListFragment).removeFromList(pos)
@@ -82,13 +82,15 @@ class MainActivity : AppCompatActivity() {
                 val hostname = bundle.getString(AddTestDialogFragment.KEY_HOSTNAME)+""
                 val port = bundle.getInt(AddTestDialogFragment.KEY_PORT)
                 val ssl = bundle.getBoolean(AddTestDialogFragment.KEY_SSL)
+                val certalias = bundle.getString(AddTestDialogFragment.KEY_CERTALIAS).toString()
 
                 val localTests = testList.all().get("local")?.toMutableList()
                 if (localTests != null) {
                     val test = ConnectivityTest(
                         hostname,
                         port,
-                        ssl
+                        ssl,
+                        certalias
                     )
                     localTests.add(test)
                     testList.update("local", localTests as ArrayList<ConnectivityTest>)
