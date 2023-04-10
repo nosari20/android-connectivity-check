@@ -20,35 +20,35 @@
             android:layout_height="40dp"
             android:backgroundTint="#FFFFFF"
             android:foregroundTint="#FFFFFF"
-            android:tint="#4CAF50"
             app:layout_constraintBottom_toBottomOf="@+id/ConstraintLayout"
             app:layout_constraintStart_toStartOf="@+id/ConstraintLayout"
             app:layout_constraintTop_toTopOf="@+id/ConstraintLayout"
             app:srcCompat="@drawable/ic_check"
-            tools:visibility="gone" />
+            tools:visibility="gone"
+            app:tint="#4CAF50" />
 
         <ImageView
             android:id="@+id/list_item_ko"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:tint="#F44336"
             app:layout_constraintBottom_toBottomOf="@+id/ConstraintLayout"
             app:layout_constraintStart_toStartOf="@+id/ConstraintLayout"
             app:layout_constraintTop_toTopOf="@+id/ConstraintLayout"
             app:srcCompat="@drawable/ic_close"
-            tools:visibility="gone" />
+            tools:visibility="gone"
+            app:tint="#F44336" />
 
         <ImageView
             android:id="@+id/list_item_unknown"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:defaultFocusHighlightEnabled="true"
-            android:tint="#ACACAC"
             app:layout_constraintBottom_toBottomOf="@+id/ConstraintLayout"
             app:layout_constraintStart_toStartOf="@+id/ConstraintLayout"
             app:layout_constraintTop_toTopOf="@+id/ConstraintLayout"
             app:srcCompat="@drawable/ic_help"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            app:tint="#ACACAC" />
 
         <ProgressBar
             android:id="@+id/list_item_loading"

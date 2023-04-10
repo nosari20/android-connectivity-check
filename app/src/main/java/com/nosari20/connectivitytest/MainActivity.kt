@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
 
     private val testList = Configuration
     private val activity = this
+    private lateinit var  fragmentAdapter: ViewPager2FragmentAdapter
 
     private lateinit var addTestDialogFragment: AddTestDialogFragment
 
@@ -35,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         testList.loadManagedConfigurations(applicationContext);
         testList.loadLocalConfigurations(this)
 
-        val adapter = ViewPager2FragmentAdapter(supportFragmentManager, lifecycle)
+        fragmentAdapter = ViewPager2FragmentAdapter(supportFragmentManager, lifecycle)
 
         val onLongClick = object:  Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
@@ -46,29 +48,29 @@ class MainActivity : AppCompatActivity() {
                 localTests?.removeAt(pos)
                 testList.update("local", localTests as ArrayList<ConnectivityTest>)
                 testList.saveLocalConfigurations(activity)
-                (adapter.getFragment("Custom") as CheckListFragment).removeFromList(pos)
+                (fragmentAdapter.getFragment("Custom") as CheckListFragment).removeFromList(pos)
 
             }
         }
 
 
         Configuration.all().get("local")?.let { CheckListFragment(it, onLongClick) }?.let {
-            adapter.addFragment(
+            fragmentAdapter.addFragment(
                 it,"Custom")
         }
 
         Configuration.all().get("managed")?.let { CheckListFragment(it, null) }?.let {
-            adapter.addFragment(
+            fragmentAdapter.addFragment(
                 it,"AppConfig")
         }
 
 
         Configuration.all().get("google")?.let { CheckListFragment(it, null) }?.let {
-            adapter.addFragment(
+            fragmentAdapter.addFragment(
                 it,"Android")
         }
 
-        viewpager.adapter = adapter
+        viewpager.adapter = fragmentAdapter
 
 
         TabLayoutMediator(tabs, viewpager) { tab, position ->
@@ -95,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                     localTests.add(test)
                     testList.update("local", localTests as ArrayList<ConnectivityTest>)
                     testList.saveLocalConfigurations(activity)
-                    (adapter.getFragment("Custom") as CheckListFragment).addToList(test)
+                    (fragmentAdapter.getFragment("Custom") as CheckListFragment).addToList(test)
                     Toast.makeText(applicationContext,"New test added.",Toast.LENGTH_SHORT).show()
                 }
             }
@@ -123,7 +125,7 @@ class MainActivity : AppCompatActivity() {
                             testList.loadSerializedConfigurations(stringBuilder.toString())
                             Toast.makeText(applicationContext,"Configuration imported successfully",Toast.LENGTH_SHORT).show()
                             Configuration.all().get("local")?.let {
-                                (adapter.getFragment("Custom") as CheckListFragment).setList(it)
+                                (fragmentAdapter.getFragment("Custom") as CheckListFragment).setList(it)
                             }
                             Toast.makeText(applicationContext,"Config imported successfully.",Toast.LENGTH_SHORT).show()
                             testList.saveLocalConfigurations(activity)
@@ -196,5 +198,8 @@ class MainActivity : AppCompatActivity() {
             addTestDialogFragment.show(supportFragmentManager, "NoticeDialogFragment")
         }
     }
+
+
+
 
 }
