@@ -3,24 +3,31 @@ package com.nosari20.connectivitytest
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.view.menu.MenuView.ItemView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 
 class ConnectivityTestListAdapter(private val list: List<ConnectivityTest>, private  val onLongClick : Handler?)
     : RecyclerView.Adapter<ConnectivityTestListAdapter.ConnectivityTestViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConnectivityTestViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val view = ConnectivityTestViewHolder(
+
+        var itemView: View? = inflater.inflate(R.layout.list_item_test, parent, false)
+
+
+        return ConnectivityTestViewHolder(
             inflater,
-            parent
+            parent,
+            itemView!!
         )
-        return view
     }
 
     override fun onBindViewHolder(holder: ConnectivityTestViewHolder, position: Int) {
@@ -33,8 +40,8 @@ class ConnectivityTestListAdapter(private val list: List<ConnectivityTest>, priv
     override fun getItemCount(): Int = list.size
 
 
-    class ConnectivityTestViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
-        RecyclerView.ViewHolder(inflater.inflate(R.layout.list_item_test, parent, false)) {
+    class ConnectivityTestViewHolder(inflater: LayoutInflater, parent: ViewGroup, itemView: View) :
+        RecyclerView.ViewHolder(itemView) {
 
 
         companion object {
@@ -102,6 +109,7 @@ class ConnectivityTestListAdapter(private val list: List<ConnectivityTest>, priv
                 true
             })
         }
+
     }
 
 }

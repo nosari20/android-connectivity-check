@@ -27,6 +27,7 @@ class CheckListFragment(private var list: List<ConnectivityTest>, private val on
 
     private lateinit var testlist: RecyclerView
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -123,71 +124,65 @@ class CheckListFragment(private var list: List<ConnectivityTest>, private val on
 
         var sslFactory: SSLSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
 
-            val clientAuth = !(test.certAlias.isEmpty() || test.certAlias.equals("null"))
+        val clientAuth = !(test.certAlias.isEmpty() || test.certAlias.equals("null"))
 
-            if(clientAuth) {
+        if(clientAuth) {
 
-                val priv = KeyChain.getPrivateKey(this.requireContext(), test.certAlias)
-                val pub = KeyChain.getCertificateChain(this.requireContext(), test.certAlias)
+            val priv = KeyChain.getPrivateKey(this.requireContext(), test.certAlias)
+            val pub = KeyChain.getCertificateChain(this.requireContext(), test.certAlias)
 
-                if (priv == null) {
-                    requestAliasPermission(test);
-                    return
-                }
-
-                val km = object : X509KeyManager {
-
-                    override fun getCertificateChain(alias: String?): Array<X509Certificate> {
-                        return pub!!
-                    }
-
-                    override fun getPrivateKey(alias: String?): PrivateKey {
-                        return priv!!
-                    }
-
-                    override fun chooseClientAlias(keyType: Array<out String>?, issuers: Array<out Principal>?, socket: Socket ): String {
-                        return test.certAlias
-                    }
-
-                    override fun getClientAliases(
-                        keyType: String?,
-                        issuers: Array<out Principal>?
-                    ): Array<String> {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun getServerAliases(
-                        keyType: String?,
-                        issuers: Array<out Principal>?
-                    ): Array<String> {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun chooseServerAlias(
-                        keyType: String?,
-                        issuers: Array<out Principal>?,
-                        socket: Socket?
-                    ): String {
-                        TODO("Not yet implemented")
-                    }
-
-                }
-
-                var sslContext = SSLContext.getInstance("TLS")
-
-                sslContext.init(arrayOf<KeyManager>(km), null, null)
-
-                sslFactory = sslContext.socketFactory
+            if (priv == null) {
+                requestAliasPermission(test);
+                return
             }
 
+            val km = object : X509KeyManager {
 
-            var client: SSLSocket? = null
+                override fun getCertificateChain(alias: String?): Array<X509Certificate> {
+                    return pub!!
+                }
 
-            /*
-            getActivity()?.runOnUiThread(java.lang.Runnable {
-                testlist.adapter?.notifyDataSetChanged()
-            })
-            */
+                override fun getPrivateKey(alias: String?): PrivateKey {
+                    return priv!!
+                }
+
+                override fun chooseClientAlias(keyType: Array<out String>?, issuers: Array<out Principal>?, socket: Socket ): String {
+                    return test.certAlias
+                }
+
+                override fun getClientAliases(
+                    keyType: String?,
+                    issuers: Array<out Principal>?
+                ): Array<String> {
+                    TODO("Not yet implemented")
+                }
+
+                override fun getServerAliases(
+                    keyType: String?,
+                    issuers: Array<out Principal>?
+                ): Array<String> {
+                    TODO("Not yet implemented")
+                }
+
+                override fun chooseServerAlias(
+                    keyType: String?,
+                    issuers: Array<out Principal>?,
+                    socket: Socket?
+                ): String {
+                    TODO("Not yet implemented")
+                }
+
+            }
+
+            var sslContext = SSLContext.getInstance("TLS")
+
+            sslContext.init(arrayOf<KeyManager>(km), null, null)
+
+            sslFactory = sslContext.socketFactory
+        }
+
+
+        var client: SSLSocket? = null
 
         try {
 
@@ -205,8 +200,6 @@ class CheckListFragment(private var list: List<ConnectivityTest>, private val on
             val verifier = HostnameVerifier { hostname, session ->
                 var match = false
                 try {
-
-                    val subject = session.peerCertificateChain[0].subjectDN.toString()
 
                     val cf: CertificateFactory = CertificateFactory.getInstance("X.509")
                     val bais = ByteArrayInputStream(session.peerCertificateChain[0].getEncoded())
@@ -289,5 +282,4 @@ class CheckListFragment(private var list: List<ConnectivityTest>, private val on
             },  /* keyTypes[] */null,  /* issuers[] */null,  /* uri */null,  /* alias */test.certAlias
         )
     }
-
 }
