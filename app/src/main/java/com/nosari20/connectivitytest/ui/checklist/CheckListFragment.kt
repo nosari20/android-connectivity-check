@@ -210,10 +210,10 @@ class CheckListFragment(private var list: List<ConnectivityTest>, private val on
                         if (SAN[0] == 2) {// if DNS name
                             val DNSName = SAN[1].toString()
                             match =
-                                DNSName.equals(hostname) || // DNSName = example.com, Hostname = example.com
-                                        (DNSName.replace(hostname, "")
+                                DNSName.lowercase().equals(hostname.lowercase()) || // DNSName = example.com, Hostname = example.com
+                                        (DNSName.lowercase().replace(hostname.lowercase(), "")
                                             .equals(".*")) || // DNSName = *.example.com, Hostname = example.com
-                                        (hostname.removeSuffix(DNSName.removePrefix("*."))
+                                        (hostname.lowercase().removeSuffix(DNSName.lowercase().removePrefix("*."))
                                             .endsWith(".")) // DNSName = *.example.com, Hostname = foo.example.com
 
                             if (match)

@@ -19,8 +19,8 @@ android {
         applicationId "com.nosari20.connectivitytest"
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 12
-        versionName "1.7"
+        versionCode 14
+        versionName "1.8"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
