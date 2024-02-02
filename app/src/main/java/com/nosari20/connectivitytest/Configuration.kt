@@ -16,10 +16,11 @@ object Configuration {
 
         // Global
         googleServices.add(ConnectivityTest("accounts.google.com", 443, true))
-        googleServices.add(ConnectivityTest("accounts.google.fr", 443, true))
         googleServices.add(ConnectivityTest("clients1.google.com", 443, true))
         googleServices.add(ConnectivityTest("play.google.com", 443, true))
         googleServices.add(ConnectivityTest("android.googleapis.com", 443, true))
+        googleServices.add(ConnectivityTest("android.apis.google.com", 443, true))
+
 
         // Push
         googleServices.add(ConnectivityTest("fcm.googleapis.com", 443, true))
