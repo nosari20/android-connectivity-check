@@ -58,7 +58,6 @@ object Configuration {
         if (parcelables?.isNotEmpty() == true) {
             // iterate parcelables and cast as bundle
             parcelables.map { it as Bundle }.forEach { testBundle ->
-                // parse bundle data and store in VpnConfig array
                 managedChecks.add(
                     ConnectivityTest(
                         testBundle.getString("test_hostname").toString(),
