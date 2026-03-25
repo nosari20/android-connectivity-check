@@ -9,14 +9,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:requestLegacyExternalStorage="true"
-        android:networkSecurityConfig="@xml/network_security_config">
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:enableOnBackInvokedCallback="true">
 
         <activity
             android:name=".MainActivity"
             android:screenOrientation="fullUser"
             android:exported="true"
             android:configChanges="screenSize|smallestScreenSize|orientation|screenLayout"
-            >
+            android:enableOnBackInvokedCallback="true">
 
             <meta-data android:name="WindowManagerPreference:FreeformWindowSize"
                 android:value="maximize" />
@@ -33,6 +34,16 @@
 
         <meta-data android:name="android.content.APP_RESTRICTIONS"
             android:resource="@xml/restrictions" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
     </application>
 

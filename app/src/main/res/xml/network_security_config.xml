@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<network-security-config>
-    <base-config>
+<network-security-config xmlns:tools="http://schemas.android.com/tools">
+    <!-- Allow cleartext HTTP traffic globally for CRL downloads from any CA -->
+    <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
-            <certificates src="user"/>
+            <certificates src="user"
+                tools:ignore="AcceptsUserCertificates" />
             <certificates src="system"/>
         </trust-anchors>
     </base-config>

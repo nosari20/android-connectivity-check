@@ -22,10 +22,14 @@
                 android:restrictionType="bool"
                 android:title="Use SSL/TLS"/>
             <restriction
+                android:key="test_enable_crl_check"
+                android:restrictionType="bool"
+                android:title="Enable CRL Check"
+                android:defaultValue="false"/>
+            <restriction
                 android:key="test_certalias"
                 android:restrictionType="string"
-                android:title="CBA alias"
-                android.description="Certificate alias for client authentication"/>
+                android:title="CBA alias"/>
         </restriction>
     </restriction>
 
